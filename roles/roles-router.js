@@ -61,21 +61,33 @@ router.put("/:id", async (req, res) => {
       .where({ id })
       .update(newInfo);
     if (count) {
-      // const updated = await db("roles")
-      //   .where({ id })
-      //   .first();
-      res.status(200).json(count);
+      const updated = await db("roles")
+        .where({ id })
+        .first();
+      res.status(200).json(updated);
     } else {
-      res.status(404).message({ message: "The record could not be located" });
+      res.status(404).json({ message: "The record could not be located" });
     }
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
   }
 });
 
-router.delete("/:id", (req, res) => {
-  // remove roles (inactivate the role)
-  res.send("Write code to remove a role");
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const count = await db("roles")
+      .where({ id })
+      .del();
+    if (count) {
+      res.status(204).end();
+    } else {
+      res.status(404).json({ message: "The record could not be located." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong." });
+  }
 });
 
 module.exports = router;
